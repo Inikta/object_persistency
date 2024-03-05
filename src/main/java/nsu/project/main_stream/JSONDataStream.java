@@ -15,7 +15,8 @@ public class JSONDataStream <K> {
     public JSONDataStream(Path storagePath) {
         this.storagePath = storagePath;
     }
-    
+
+    //M1mur part
     public List<K> read() {
         return null;
     }

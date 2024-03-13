@@ -2,8 +2,8 @@ package nsu.project.data;
 
 import java.util.List;
 
-public class DeserializedData<T> implements IDeserializedData <T> {
-    @Override
+//M1mur part
+public class DeserializedData<T> {
     public List<T> unwrap() {
         return null;
     }

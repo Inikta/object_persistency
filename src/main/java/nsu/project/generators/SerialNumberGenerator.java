@@ -19,7 +19,6 @@ public class SerialNumberGenerator {
         String toDigest = String.join("_", fieldStrings);
         return digester(toDigest);
     }
-
     private static String digester(String string) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-1");
         return Arrays.toString(md.digest(string.getBytes(StandardCharsets.UTF_8)));

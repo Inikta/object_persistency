@@ -9,7 +9,7 @@ import java.util.stream.BaseStream;
 
 public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     private final Path storagePath;
-    private final List<Predicate<K>> conditions = new ArrayList<>();
+    private FilterPredicate<K> filterExpression;
     private final HashMap<Long, Integer> SerIdStatusMap = new HashMap<>();
 
     public JSONDataWriterStream(Path storagePath) {
@@ -33,6 +33,7 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
 
     @Override
     public List<K> filterCondition(FilterPredicate<K> filterPredicate) {
+        filterExpression = filterPredicate;
         return null;
     }
 }

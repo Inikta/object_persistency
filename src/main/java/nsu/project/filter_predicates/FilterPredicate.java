@@ -1,5 +1,5 @@
 package nsu.project.filter_predicates;
 
 public interface FilterPredicate<T> {
-    public boolean evaluate();
+    boolean evaluate();
 }

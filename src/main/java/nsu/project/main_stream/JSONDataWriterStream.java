@@ -11,7 +11,8 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     private FilterPredicate<K> filterExpression;
     private final HashMap<Long, Integer> SerIdStatusMap = new HashMap<>();
     private String kClassName;
-    private JSONObject jsonObject;
+    private JSONObject jsonChunk;
+
     public JSONDataWriterStream(String storagePath) {
         this.storagePath = storagePath;
         prepareForFilterAndWrite();
@@ -20,11 +21,11 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     private JSONDataWriterStream(String storagePath,
                                  FilterPredicate<K> filterExpression,
                                  String kClassName,
-                                 JSONObject jsonObject) {
+                                 JSONObject jsonChunk) {
         this.storagePath = storagePath;
         this.filterExpression = filterExpression;
         this.kClassName = kClassName;
-        this.jsonObject = jsonObject;
+        this.jsonChunk = jsonChunk;
     }
 
     public void write(K kObject) {
@@ -38,12 +39,12 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     public void write(List<K> kObjectList) {
 
 
-        kClassName = kClass.getName();
+        kClassName = kObjectList.getClass().getName();
     }
 
     private void prepareForFilterAndWrite() {
         String readResult = readJSON();
-        jsonObject = new JSONObject(readResult);
+        jsonChunk = new JSONObject(readResult);
     }
 
     private String readJSON() {
@@ -85,7 +86,7 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                     if (storageClasses.stream()
                             .anyMatch(w -> (
                                     w.equals(finalInputLine.substring(0, w.length()).strip())
-                                    & !w.equals(kClassName))) & prevLine.strip().equals("],")) {
+                                            & !w.equals(kClassName))) & prevLine.strip().equals("],")) {
                         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
                         stringBuilder.insert(0, '{');
                         stringBuilder.insert(stringBuilder.length(), '}');
@@ -105,7 +106,9 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     public JSONDataWriterStream<K> filter(FilterPredicate<K> filterPredicate) {
         filterExpression = filterPredicate;
 
-        return new JSONDataWriterStream<>(this.storagePath, this.filterExpression, this.kClassName, this.jsonObject);
+        jsonChunk.keys()
+
+        return new JSONDataWriterStream<>(this.storagePath, this.filterExpression, this.kClassName, this.jsonChunk);
     }
 
 

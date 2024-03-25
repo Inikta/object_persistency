@@ -1,85 +1,112 @@
 package nsu.project.main_stream;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import nsu.project.filter_predicates.FilterPredicate;
+import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Path;
+import java.io.*;
 import java.util.*;
 
 public class JSONDataWriterStream<K> implements JSONDataStream<K> {
-    private final Path storagePath;
+    private final String storagePath;
     private FilterPredicate<K> filterExpression;
     private final HashMap<Long, Integer> SerIdStatusMap = new HashMap<>();
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public JSONDataWriterStream(Path storagePath) {
+    private String kClassName;
+    private JSONObject jsonObject;
+    public JSONDataWriterStream(String storagePath) {
         this.storagePath = storagePath;
+        prepareForFilterAndWrite();
     }
 
-    public void write(Class<K> kClass, K kObject) {
-        write(kClass, List.of(kObject));
+    private JSONDataWriterStream(String storagePath,
+                                 FilterPredicate<K> filterExpression,
+                                 String kClassName,
+                                 JSONObject jsonObject) {
+        this.storagePath = storagePath;
+        this.filterExpression = filterExpression;
+        this.kClassName = kClassName;
+        this.jsonObject = jsonObject;
     }
 
-    public void write(Class<K> kClass, K[] kObjects) {
-        write(kClass, List.of(kObjects));
+    public void write(K kObject) {
+        write(List.of(kObject));
     }
 
-    public void write(Class<K> kClass, List<K> kObjectList) {
-
+    public void write(K[] kObjects) {
+        write(List.of(kObjects));
     }
 
-    private String objectToJsonString(K object, int objectId) throws JsonProcessingException {
-        String json = objectMapper.writeValueAsString(object);
-        json = objectId + ":" + json;
-        return json;
+    public void write(List<K> kObjectList) {
+
+
+        kClassName = kClass.getName();
     }
-    private void jsonPlaceFinder(Set<K> objects) throws IOException {
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(String.valueOf(storagePath)));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
 
-        String className = objects.getClass().getName();
-        HashMap<Integer, K> hashToObjectMap = new HashMap<>();
-        objects.forEach(o -> hashToObjectMap.put(o.hashCode(), o));
+    private void prepareForFilterAndWrite() {
+        String readResult = readJSON();
+        jsonObject = new JSONObject(readResult);
+    }
 
-        boolean isKClass = false;
-        boolean isBegin = false;
-        boolean isEnd = false;
-        boolean isPlace = false;
-        for (String line; (line = reader.readLine()) != null;) {
-            if (line.contains(className)) {
-                isKClass = true;
-                continue;
-            }
-            if (isKClass & line.contains("["))
-            {
-                isBegin = true;
-                continue;
-            }
-            if (isKClass & isBegin )
-            if (hashToObjectMap.containsKey(Integer.parseInt(line))) {
+    private String readJSON() {
+        StringBuilder stringBuilder = new StringBuilder();
+        File file = new File(storagePath);
 
-            } else if (line.contains()) {
-                if (isKClass) {
+        try (BufferedReader in = new BufferedReader(
+                new InputStreamReader(
+                        new FileInputStream(file)))) {
 
+            String inputLine;
+            List<String> storageClasses = new ArrayList<>();
+            boolean kClassFound = false;
+            String prevLine = "";
+            while (true) {
+                inputLine = in.readLine();
+
+                if (inputLine == null) {
+                    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+                    stringBuilder.deleteCharAt(stringBuilder.length() - 2);
+                    break;
                 }
+
+                if (storageClasses.isEmpty() & inputLine.contains("classNames : [") & prevLine.contains("{")) {
+                    String str = inputLine.replaceAll("\\p{Punct}", " ");
+                    storageClasses = Arrays.stream(str.split("\\s")).toList();
+                }
+
+
+                if (inputLine.contains(kClassName + ": [") & prevLine.contains("],") & !kClassFound) {
+                    kClassFound = true;
+                    stringBuilder.append(inputLine);
+                    prevLine = inputLine;
+                    continue;
+                }
+
+                if (kClassFound) {
+                    String finalInputLine = inputLine;
+                    if (storageClasses.stream()
+                            .anyMatch(w -> (
+                                    w.equals(finalInputLine.substring(0, w.length()).strip())
+                                    & !w.equals(kClassName))) & prevLine.strip().equals("],")) {
+                        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+                        stringBuilder.insert(0, '{');
+                        stringBuilder.insert(stringBuilder.length(), '}');
+                        break;
+                    }
+                }
+
+                prevLine = inputLine;
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
+        return stringBuilder.toString();
     }
 
-    @Override
-    public List<K> filterCondition(FilterPredicate<K> filterPredicate) {
+    public JSONDataWriterStream<K> filter(FilterPredicate<K> filterPredicate) {
         filterExpression = filterPredicate;
 
-        return null;
+        return new JSONDataWriterStream<>(this.storagePath, this.filterExpression, this.kClassName, this.jsonObject);
     }
+
+
 }

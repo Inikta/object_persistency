@@ -1,186 +1,122 @@
 package nsu.project.deserialise;
-import java.io.*;
-import java.nio.file.AccessDeniedException;
+package nsu.project;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
-public class JSONDataStream<Person, Building> {
-    private String filePath;
-
-    public JSONDataStream(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public DeserializedData read() throws FileNotFoundException, AccessDeniedException, NotSerializableException, ClassNotFoundException, IOException {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            throw new FileNotFoundException("File not found: " + filePath);
-        }
-        if (!file.canRead()) {
-            throw new AccessDeniedException("Access denied to file: " + filePath);
-        }
-
-        String content = new String(Files.readAllBytes(file.toPath()));
-        Map<String, Object> data = parseJSON(content);
-
-        Map<Object, Boolean> visited = new HashMap<>();
-        for (String key : data.keySet()) {
-            visited.put(key, false);
-        }
-
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            if (!visited.get(key)) {
-                visited.put(key, true);
-/*                if (value instanceof Person || value instanceof Building) {
-                    if (value.getClass().getAnnotation(Ignore.class) != null) {
-                        throw new NotSerializableException("Class " + value.getClass().getSimpleName() + " has @Ignore annotation");
-                    }
-                    if (value == null) {
-                        throw new NullPointerException("Field value is null");
-                    }
-                }*/
-                if (value != null && data.containsValue(value)) {
-                    visited.put(value, true);
-                }
-            }
-        }
-
-        return new DeserializedData(data);
-    }
-
-    private Map<String, Object> parseJSON(String json) {
-        Map<String, Object> map = new HashMap<>();
-        String[] tokens = tokenize(json);
-
-        int i = 0;
-        while (i < tokens.length) {
-            String key = tokens[i].substring(1, tokens[i].length() - 1);
-            i += 2; // Skip the colon
-
-            if (tokens[i].equals("{")) {
-                // Object
-                i++;
-                Map<String, Object> value = parseJSON(json.substring(i));
-                map.put(key, value);
-                i += value.size() * 2; // Move to the next key-value pair
-            } else if (tokens[i].equals("[")) {
-                // Array
-                i++;
-                List<Object> value = parseJSONArray(json.substring(i));
-                map.put(key, value);
-                i += value.size() * 2; // Move to the next key-value pair
-            } else {
-                // Primitive value
-                map.put(key, parsePrimitive(tokens[i]));
-            }
-
-            i++; // Move to the next key
-        }
-
-        return map;
-    }
-
-    private List<Object> parseJSONArray(String json) {
-        List<Object> list = new ArrayList<>();
-        String[] tokens = tokenize(json);
-
-        int i = 0;
-        while (i < tokens.length) {
-            if (tokens[i].equals("{")) {
-                // Object
-                i++;
-                Map<String, Object> value = parseJSON(json.substring(i));
-                list.add(value);
-                i += value.size() * 2; // Move to the next value
-            } else if (tokens[i].equals("[")) {
-                // Array
-                i++;
-                List<Object> value = parseJSONArray(json.substring(i));
-                list.add(value);
-                i += value.size() * 2; // Move to the next value
-            } else {
-                // Primitive value
-                list.add(parsePrimitive(tokens[i]));
-            }
-
-            i++; // Move to the next value
-        }
-
-        return list;
-    }
-
-    private Object parsePrimitive(String token) {
-        if (token.equals("null")) {
-            return null;
-        } else if (token.equals("true")) {
-            return true;
-        } else if (token.equals("false")) {
-            return false;
-        } else if (token.startsWith("\"") && token.endsWith("\"")) {
-            return token.substring(1, token.length() - 1);
-        } else {
-            try {
-                return Integer.parseInt(token);
-            } catch (NumberFormatException e) {
-                try {
-                    return Double.parseDouble(token);
-                } catch (NumberFormatException ex) {
-                    throw new IllegalArgumentException("Unsupported primitive value: " + token);
-                }
-            }
-        }
-    }
-
-    private String[] tokenize(String json) {
-        List<String> tokens = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        boolean inString = false;
-
-        for (char c : json.toCharArray()) {
-            if (c == '{' || c == '}' || c == '[' || c == ']' || c == ':' || c == ',') {
-                if (inString) {
-                    sb.append(c);
-                } else {
-                    if (sb.length() > 0) {
-                        tokens.add(sb.toString());
-                        sb.setLength(0);
-                    }
-                    tokens.add(Character.toString(c));
-                }
-            } else if (c == '"') {
-                inString = !inString;
-                sb.append(c);
-            } else if (!Character.isWhitespace(c)) {
-                sb.append(c);
-            }
-        }
-
-        if (sb.length() > 0) {
-            tokens.add(sb.toString());
-        }
-
-        return tokens.toArray(new String[0]);
-    }
+public class Main {
 
     public static void main(String[] args) {
-        String filePath = "data.json";
-        JSONDataStream stream = new JSONDataStream(filePath);
-
         try {
-            DeserializedData data = stream.read();
-            System.out.println("Deserialized data: " + data);
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + e.getMessage());
-        } catch (AccessDeniedException e) {
-            System.err.println("Access denied: " + e.getMessage());
-        } catch (NotSerializableException e) {
-            System.err.println("Not serializable: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            System.err.println("Class not found: " + e.getMessage());
+            // Чтение содержимого файла JSON
+            String json_data = new String(Files.readAllBytes(Paths.get("data.json")));
+
+            // Парсинг JSON-данных
+            JSONObject data = new JSONObject(json_data);
+
+            // Создание Map для хранения информации
+            Map<String, Object> map = new HashMap<>();
+
+            // Запись информации о людях в map
+            Map<String, Object> peopleMap = new HashMap<>();
+            JSONObject personObject = data.getJSONArray("Person").getJSONObject(0);
+            for (String key : personObject.keySet()) {
+                JSONObject person = personObject.getJSONObject(key);
+                Map<String, Object> personInfo = new HashMap<>();
+                personInfo.put("name", person.getString("name"));
+                personInfo.put("surname", person.getString("surname"));
+                personInfo.put("age", person.getInt("age"));
+                personInfo.put("home", person.getString("home"));
+                peopleMap.put(key, personInfo);
+            }
+            map.put("People", peopleMap);
+
+            // Запись информации о зданиях в map
+            Map<String, Object> buildingsMap = new HashMap<>();
+            JSONObject buildingObject = data.getJSONArray("Buildings").getJSONObject(0);
+            for (String key : buildingObject.keySet()) {
+                JSONObject building = buildingObject.getJSONObject(key);
+                Map<String, Object> buildingInfo = new HashMap<>();
+                buildingInfo.put("address", building.getString("address"));
+
+                // Запись жителей здания
+                JSONArray citizensIds = building.getJSONArray("citizens");
+                List<Object> citizensInfo = citizensIds.toList();
+                buildingInfo.put("citizens", citizensInfo);
+
+                buildingsMap.put(key, buildingInfo);
+            }
+            map.put("Buildings", buildingsMap);
+
+            // Создание списка людей
+            List<Person> peopleList = new ArrayList<>();
+            for (Map.Entry<String, Object> entry : peopleMap.entrySet()) {
+                Map<String, Object> personInfo = (Map<String, Object>) entry.getValue();
+                Map<String , Object> buildId = (Map<String, Object>) map.get("Buildings");
+                Map<String , Object> peopleId = (Map<String, Object>) map.get("People");
+                String firstKey = buildId.keySet().iterator().next();
+                Map<String, Object> home = (Map<String, Object>) buildId.get(firstKey);
+                List<Person> citizens = new ArrayList<>();
+                List<Object> citizensInfo = (List<Object>) home.get("citizens");
+                for (Object citizenId : citizensInfo) {
+                    if()
+                    for (Person person : peopleList) {
+
+                        if (person.getName().equals(citizenId)) {
+                            citizens.add(person);
+                            break;
+                        }
+                    }
+                }
+                Building building = new Building((String) home.get("address"), null);
+//                Building home1 = new Building(buildId.get(firstKey).get("address"));
+                Person person = new Person(
+                        (String) personInfo.get("name"),
+                        (String) personInfo.get("surname"),
+                        (Integer) personInfo.get("age"),
+                        building // Пока не уточнено, как устанавливать ссылку на дом
+                );
+                peopleList.add(person);
+            }
+
+            // Вывод map (для проверки)
+            System.out.println(map);
+
+            // Создание списка зданий
+            List<Building> buildingsList = new ArrayList<>();
+            for (Map.Entry<String, Object> entry : buildingsMap.entrySet()) {
+                Map<String, Object> buildingInfo = (Map<String, Object>) entry.getValue();
+                List<Person> citizens = new ArrayList<>();
+                List<Object> citizensInfo = (List<Object>) buildingInfo.get("citizens");
+                for (Object citizenId : citizensInfo) {
+                    for (Person person : peopleList) {
+
+                        if (person.getName().equals(citizenId)) {
+                            citizens.add(person);
+                            break;
+                        }
+                    }
+                }
+                Building building = new Building((String) buildingInfo.get("address"), citizens);
+                buildingsList.add(building);
+            }
+
+            // Вывод информации для проверки
+            for (Building building : buildingsList) {
+                System.out.println("Building address: " + building.getAddress());
+                System.out.println("Building citizens:");
+                for (Person person : building.getCitizens()) {
+                    System.out.println("- Name: " + person.getName() + ", Surname: " + person.getSurname());
+                }
+                System.out.println();
+            }
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Failed to read file: " + e.getMessage());
         }
     }
 }

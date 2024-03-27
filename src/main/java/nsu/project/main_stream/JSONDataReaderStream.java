@@ -1,6 +1,7 @@
 package nsu.project.main_stream;
 
 import nsu.project.filter_predicates.FilterPredicate;
+import org.json.JSONObject;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -20,9 +21,7 @@ public class JSONDataReaderStream<K> implements JSONDataStream<K> {
     public List<K> read() {
         return null;
     }
-
-    @Override
-    public List<K> filterCondition(FilterPredicate<K> filterPredicate) {
+    public List<K> filter(JSONObject jsonChunk, FilterPredicate<K> filterPredicate) {
         return null;
     }
 }

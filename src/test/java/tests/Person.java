@@ -1,4 +1,4 @@
-package nsu.project;
+package tests;
 
 public class Person {
     private String name;

@@ -1,4 +1,4 @@
-package nsu.project;
+package tests;
 
 import nsu.project.main_stream.JSONDataWriterStream;
 

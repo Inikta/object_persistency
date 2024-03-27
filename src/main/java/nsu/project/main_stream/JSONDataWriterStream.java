@@ -121,7 +121,9 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                     }
                 }
 
-                if (inputLine.strip().contains("\"" + kClassName + "\": [") & (prevLine.strip().contains("{") || prevLine.strip().contains("\"storage\": [{") || inputLine.contains("\"storage\": [{")) & !kClassFound) {
+                if (inputLine.strip().contains("\"" + kClassName + "\": [")
+                        & (prevLine.strip().contains("{") || prevLine.strip().contains("\"storage\": [{") || inputLine.contains("\"storage\": [{"))
+                        & !kClassFound) {
                     kClassFound = true;
                     stringBuilder.append("{").append(inputLine.strip());
                     continue;
@@ -129,7 +131,8 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
 
                 if (kClassFound) {
                     String finalInputLine = inputLine;
-                    if (storageClasses.stream().anyMatch(w -> finalInputLine.contains(w + ": [")) & prevLine.strip().contains("},")) {
+                    if (storageClasses.stream().anyMatch(w -> finalInputLine.contains(w + ": ["))
+                            & prevLine.strip().contains("},")) {
                         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
                         break;
                     } else {

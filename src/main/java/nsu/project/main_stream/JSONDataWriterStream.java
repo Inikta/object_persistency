@@ -9,12 +9,13 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     private final String storagePathString;
     private FilterPredicate<K> filterExpression;
     private final HashMap<Long, Integer> SerIdStatusMap = new HashMap<>();
-    private String kClassName;
+    private String kClassName = "Person";
     private JSONObject oldJsonChunk;
     private JSONObject editedJsonChunk;
     private long chunkBeginPosition = 0;
@@ -69,30 +70,40 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                 new InputStreamReader(
                         new FileInputStream(file)))) {
 
-            String inputLine;
+            String inputLine = "";
             List<String> storageClasses = new ArrayList<>();
             boolean kClassFound = false;
-            String prevLine = "";
+            String prevLine;
 
             while (true) {
+                prevLine = inputLine;
                 inputLine = in.readLine();
                 chunkEndPosition++;
 
                 if (inputLine == null) {
                     if (!stringBuilder.isEmpty()) {
-                        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-                        stringBuilder.deleteCharAt(stringBuilder.length() - 2);
+                        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+                        if (chunkBeginPosition == 0) {
+                            stringBuilder.delete(0, 40);
+                        }
                     }
                     break;
                 }
 
-                if (storageClasses.isEmpty() & inputLine.contains("\"classNames\": [") & prevLine.contains("{")) {
-                    if (inputLine.strip().substring(16).contains("],")) {
-                        String str = inputLine.replaceAll("\\p{Punct}", ":");
-                        storageClasses = Arrays.stream(str.split(":")).map(String::strip).toList();
+                if (storageClasses.isEmpty() & inputLine.contains("\"classNames\": [")
+                        & (prevLine.contains("{")
+                        || (prevLine.contains("") & (inputLine.contains("\"" + kClassName + "\""))))) {
+                    if (inputLine.substring(0, inputLine.indexOf("],") + 1).strip().contains("]")) {
+                        String str = inputLine.substring(0, inputLine.indexOf("],") + 1).replaceAll("\\p{Punct}", ":");
+                        storageClasses = Arrays
+                                .stream(str.split(":"))
+                                .map(String::strip)
+                                .filter(w -> !w.equals("") & !w.equals("classNames"))
+                                .toList();
                     } else {
+                        prevLine = inputLine;
                         inputLine = in.readLine();
-                        while (!inputLine.strip().equals("[,")) {
+                        while (!inputLine.strip().equals("],")) {
                             if (inputLine.strip().matches("\"\\p{Upper}\\p{Alpha}*\",?")) {
                                 String temp = inputLine.strip();
                                 if (temp.contains(",")) {
@@ -100,36 +111,35 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                                 }
                                 storageClasses.add(temp);
                             }
+                            prevLine = inputLine;
                             inputLine = in.readLine();
                         }
+
+                        if (!storageClasses.isEmpty()) {
+                            continue;
+                        }
                     }
-                    if (!storageClasses.isEmpty()) {
-                        continue;
-                    }
-                    return "{\"Person\": []}";
                 }
 
-                if (inputLine.contains(kClassName + "\": [") & (prevLine.contains("},") || prevLine.contains("\"storage\" : ["))& !kClassFound) {
+                if (inputLine.strip().contains("\"" + kClassName + "\": [") & (prevLine.strip().contains("{") || prevLine.strip().contains("\"storage\": [{") || inputLine.contains("\"storage\": [{")) & !kClassFound) {
                     kClassFound = true;
-                    stringBuilder.append(inputLine);
-                    prevLine = inputLine;
+                    stringBuilder.append("{").append(inputLine.strip());
                     continue;
                 }
 
                 if (kClassFound) {
                     String finalInputLine = inputLine;
-                    if (storageClasses.stream().anyMatch(w -> finalInputLine.contains(w + " : ["))) {
+                    if (storageClasses.stream().anyMatch(w -> finalInputLine.contains(w + ": [")) & prevLine.strip().contains("},")) {
                         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-                        stringBuilder.insert(0, '{');
-                        stringBuilder.insert(stringBuilder.length(), '}');
                         break;
+                    } else {
+                        stringBuilder.append(inputLine.strip());
                     }
                 }
 
                 if (!kClassFound) {
                     ++chunkBeginPosition;
                 }
-                prevLine = inputLine;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -137,6 +147,7 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
 
         return stringBuilder.toString();
     }
+
     public JSONDataWriterStream<K> put(K kObject) {
         return put(List.of(kObject));
     }
@@ -160,7 +171,6 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
 
     public JSONDataWriterStream<K> filter(FilterPredicate<K> filterPredicate) {
         filterExpression = filterPredicate;
-
 
 
         return new JSONDataWriterStream<>(

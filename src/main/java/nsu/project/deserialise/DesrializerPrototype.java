@@ -2,6 +2,7 @@ package nsu.project.deserialise;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,14 +30,16 @@ public class DesrializerPrototype {
             buildingCreate(data);
 
             // Вывод информации о людях и зданиях
-            System.out.println("People:");
-            for (Person person : peopleMap.values()) {
-                System.out.println(person.toString());
-            }
+            try (FileWriter writer = new FileWriter("output.txt")) {
+                writer.write("People:\n");
+                for (Person person : peopleMap.values()) {
+                    writer.write(person.toString() + "\n");
+                }
 
-            System.out.println("Buildings:");
-            for (Building building : buildingsMap.values()) {
-                System.out.println(building.toString());
+                writer.write("\nBuildings:\n");
+                for (Building building : buildingsMap.values()) {
+                    writer.write(building.toString() + "\n");
+                }
             }
 
         } catch (IOException e) {
@@ -55,7 +58,7 @@ public class DesrializerPrototype {
             String personName = personInfo.getString("name");
             String personSurname = personInfo.getString("surname");
             int personAge = personInfo.getInt("age");
-            String personHome = personInfo.optString("home", null); // Используем optString для получения значения или null
+            String personHome = personInfo.optString("home", null); // спользуем optString для получения значения или null
 
             visitedPeople.put(personKey, true);
 

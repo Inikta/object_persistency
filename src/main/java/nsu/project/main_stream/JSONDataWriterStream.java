@@ -10,15 +10,16 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     private final String storagePathString;
     private FilterPredicate<K> filterExpression;
     private final HashMap<Long, Integer> SerIdStatusMap = new HashMap<>();
-    private String kClassName;
+    private String kClassName = "Person";   //!!!!!!
     private JSONObject oldJsonChunk;
     private JSONObject editedJsonChunk;
+    private long chunkBeginLine = 0;
+    private long chunkEndLine = 0;
     private long chunkBeginPosition = 0;
     private long chunkEndPosition = 0;
     private List<K> inputObjects;
@@ -32,15 +33,15 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                                  FilterPredicate<K> filterExpression,
                                  String kClassName,
                                  JSONObject oldJsonChunk,
-                                 long chunkBeginPosition,
-                                 long chunkEndPosition,
+                                 long chunkBeginLine,
+                                 long chunkEndLine,
                                  List<K> inputObjects) {
         this.storagePathString = storagePathString;
         this.filterExpression = filterExpression;
         this.kClassName = kClassName;
         this.oldJsonChunk = oldJsonChunk;
-        this.chunkBeginPosition = chunkBeginPosition;
-        this.chunkEndPosition = chunkEndPosition;
+        this.chunkBeginLine = chunkBeginLine;
+        this.chunkEndLine = chunkEndLine;
         this.inputObjects = inputObjects;
     }
 
@@ -79,12 +80,12 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
             while (true) {
                 prevLine = inputLine;
                 inputLine = in.readLine();
-                chunkEndPosition++;
+
 
                 if (inputLine == null) {
                     if (!stringBuilder.isEmpty()) {
                         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-                        if (chunkBeginPosition == 0) {
+                        if (chunkBeginLine == 0) {
                             stringBuilder.delete(0, 40);
                         }
                     }
@@ -104,6 +105,7 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                     } else {
                         prevLine = inputLine;
                         inputLine = in.readLine();
+                        chunkBeginLine++;
                         while (!inputLine.strip().equals("],")) {
                             if (inputLine.strip().matches("\"\\p{Upper}\\p{Alpha}*\",?")) {
                                 String temp = inputLine.strip();
@@ -126,23 +128,25 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                         & (prevLine.strip().contains("{") || prevLine.strip().contains("\"storage\": [{") || inputLine.contains("\"storage\": [{"))
                         & !kClassFound) {
                     kClassFound = true;
+                    chunkEndLine = chunkBeginLine;
                     stringBuilder.append("{").append(inputLine.strip());
                     continue;
                 }
 
                 if (kClassFound) {
                     String finalInputLine = inputLine;
-                    if (storageClasses.stream().anyMatch(w -> finalInputLine.contains(w + ": ["))
+                    if (storageClasses.stream().anyMatch(w -> finalInputLine.contains("\"" + w + "\"" + ": ["))
                             & prevLine.strip().contains("},")) {
                         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
                         break;
                     } else {
                         stringBuilder.append(inputLine.strip());
+                        chunkEndLine++;
                     }
                 }
 
                 if (!kClassFound) {
-                    ++chunkBeginPosition;
+                    ++chunkBeginLine;
                 }
             }
         } catch (IOException e) {
@@ -168,8 +172,8 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                 this.filterExpression,
                 this.kClassName,
                 this.oldJsonChunk,
-                this.chunkBeginPosition,
-                this.chunkEndPosition,
+                this.chunkBeginLine,
+                this.chunkEndLine,
                 this.inputObjects);
     }
 
@@ -181,7 +185,7 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
         JSONArray jsonArray = oldJsonChunk.getJSONArray(kClassName);
 
         for (int i = 0; i < jsonArray.length(); i++) {
-            jsonArray.get(i)
+            jsonArray.get(i);
         }
 
         return new JSONDataWriterStream<>(
@@ -189,8 +193,8 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                 this.filterExpression,
                 this.kClassName,
                 this.oldJsonChunk,
-                this.chunkBeginPosition,
-                this.chunkEndPosition,
+                this.chunkBeginLine,
+                this.chunkEndLine,
                 this.inputObjects);
     }
 
@@ -222,12 +226,12 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
         return editedJsonChunk;
     }
 
-    public long getChunkBeginPosition() {
-        return chunkBeginPosition;
+    public long getChunkBeginLine() {
+        return chunkBeginLine;
     }
 
-    public long getChunkEndPosition() {
-        return chunkEndPosition;
+    public long getChunkEndLine() {
+        return chunkEndLine;
     }
 
     public List<K> getInputObjects() {

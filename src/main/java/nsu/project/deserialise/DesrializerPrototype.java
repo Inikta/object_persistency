@@ -1,4 +1,4 @@
-package nsu.project.deserialise;
+package nsu.project;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -49,6 +49,7 @@ public class DesrializerPrototype {
 
     private static void personCreate(JSONObject data) {
         JSONObject peopleObject = data.getJSONArray("Person").getJSONObject(0);
+        JSONObject buildingsObject = data.getJSONArray("Buildings").getJSONObject(0);
         for (String personKey : peopleObject.keySet()) {
             if (peopleMap.containsKey(personKey) || visitedPeople.containsKey(personKey)) {
                 continue;
@@ -58,15 +59,24 @@ public class DesrializerPrototype {
             String personName = personInfo.getString("name");
             String personSurname = personInfo.getString("surname");
             int personAge = personInfo.getInt("age");
-            String personHome = personInfo.optString("home", null); // спользуем optString для получения значения или null
+            String personHomeId = personInfo.optString("home", null); // используем optString для получения значения или null
+            Building homeBuilding = null;
+
+            if (personHomeId != null) {
+                JSONObject buildingInfo = buildingsObject.optJSONObject(personHomeId);
+                if (buildingInfo != null) {
+                    String buildingAddress = buildingInfo.getString("address");
+                    // здесь также можно получить список жителей здания и передать его в конструктор Building
+                    homeBuilding = new Building(buildingAddress, null);
+                }
+            }
 
             visitedPeople.put(personKey, true);
-
-            Building homeBuilding = personHome != null ? new Building(personHome, null) : null;
             Person person = new Person(personName, personSurname, personAge, homeBuilding);
             peopleMap.put(personKey, person);
         }
     }
+
 
     private static void buildingCreate(JSONObject data) {
         JSONObject buildingsObject = data.getJSONArray("Buildings").getJSONObject(0);

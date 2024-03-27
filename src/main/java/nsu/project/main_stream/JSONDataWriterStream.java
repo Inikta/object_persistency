@@ -1,6 +1,7 @@
 package nsu.project.main_stream;
 
 import nsu.project.filter_predicates.FilterPredicate;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +16,7 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     private final String storagePathString;
     private FilterPredicate<K> filterExpression;
     private final HashMap<Long, Integer> SerIdStatusMap = new HashMap<>();
-    private String kClassName = "Person";
+    private String kClassName;
     private JSONObject oldJsonChunk;
     private JSONObject editedJsonChunk;
     private long chunkBeginPosition = 0;
@@ -172,9 +173,16 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
                 this.inputObjects);
     }
 
+    private List<String> convertInputToJSONString(List<K> inputObjects) {
+        return inputObjects.stream().map(Object::toString).toList();
+    }
     public JSONDataWriterStream<K> filter(FilterPredicate<K> filterPredicate) {
         filterExpression = filterPredicate;
+        JSONArray jsonArray = oldJsonChunk.getJSONArray(kClassName);
 
+        for (int i = 0; i < jsonArray.length(); i++) {
+            jsonArray.get(i)
+        }
 
         return new JSONDataWriterStream<>(
                 this.storagePathString,

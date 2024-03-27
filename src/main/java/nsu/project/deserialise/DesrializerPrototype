@@ -1,14 +1,20 @@
 package nsu.project.deserialise;
-package nsu.project;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Main {
+public class DesrializerPrototype {
+    private static Map<String, Person> peopleMap = new HashMap<>();
+    private static Map<String, Building> buildingsMap = new HashMap<>();
+    private static Map<String, Boolean> visitedPeople = new HashMap<>();
+    private static Map<String, Boolean> visitedBuildings = new HashMap<>();
 
     public static void main(String[] args) {
         try {
@@ -18,105 +24,69 @@ public class Main {
             // Парсинг JSON-данных
             JSONObject data = new JSONObject(json_data);
 
-            // Создание Map для хранения информации
-            Map<String, Object> map = new HashMap<>();
+            // Создание объектов Person и Building
+            personCreate(data);
+            buildingCreate(data);
 
-            // Запись информации о людях в map
-            Map<String, Object> peopleMap = new HashMap<>();
-            JSONObject personObject = data.getJSONArray("Person").getJSONObject(0);
-            for (String key : personObject.keySet()) {
-                JSONObject person = personObject.getJSONObject(key);
-                Map<String, Object> personInfo = new HashMap<>();
-                personInfo.put("name", person.getString("name"));
-                personInfo.put("surname", person.getString("surname"));
-                personInfo.put("age", person.getInt("age"));
-                personInfo.put("home", person.getString("home"));
-                peopleMap.put(key, personInfo);
-            }
-            map.put("People", peopleMap);
-
-            // Запись информации о зданиях в map
-            Map<String, Object> buildingsMap = new HashMap<>();
-            JSONObject buildingObject = data.getJSONArray("Buildings").getJSONObject(0);
-            for (String key : buildingObject.keySet()) {
-                JSONObject building = buildingObject.getJSONObject(key);
-                Map<String, Object> buildingInfo = new HashMap<>();
-                buildingInfo.put("address", building.getString("address"));
-
-                // Запись жителей здания
-                JSONArray citizensIds = building.getJSONArray("citizens");
-                List<Object> citizensInfo = citizensIds.toList();
-                buildingInfo.put("citizens", citizensInfo);
-
-                buildingsMap.put(key, buildingInfo);
-            }
-            map.put("Buildings", buildingsMap);
-
-            // Создание списка людей
-            List<Person> peopleList = new ArrayList<>();
-            for (Map.Entry<String, Object> entry : peopleMap.entrySet()) {
-                Map<String, Object> personInfo = (Map<String, Object>) entry.getValue();
-                Map<String , Object> buildId = (Map<String, Object>) map.get("Buildings");
-                Map<String , Object> peopleId = (Map<String, Object>) map.get("People");
-                String firstKey = buildId.keySet().iterator().next();
-                Map<String, Object> home = (Map<String, Object>) buildId.get(firstKey);
-                List<Person> citizens = new ArrayList<>();
-                List<Object> citizensInfo = (List<Object>) home.get("citizens");
-                for (Object citizenId : citizensInfo) {
-                    if()
-                    for (Person person : peopleList) {
-
-                        if (person.getName().equals(citizenId)) {
-                            citizens.add(person);
-                            break;
-                        }
-                    }
-                }
-                Building building = new Building((String) home.get("address"), null);
-//                Building home1 = new Building(buildId.get(firstKey).get("address"));
-                Person person = new Person(
-                        (String) personInfo.get("name"),
-                        (String) personInfo.get("surname"),
-                        (Integer) personInfo.get("age"),
-                        building // Пока не уточнено, как устанавливать ссылку на дом
-                );
-                peopleList.add(person);
+            // Вывод информации о людях и зданиях
+            System.out.println("People:");
+            for (Person person : peopleMap.values()) {
+                System.out.println(person.toString());
             }
 
-            // Вывод map (для проверки)
-            System.out.println(map);
-
-            // Создание списка зданий
-            List<Building> buildingsList = new ArrayList<>();
-            for (Map.Entry<String, Object> entry : buildingsMap.entrySet()) {
-                Map<String, Object> buildingInfo = (Map<String, Object>) entry.getValue();
-                List<Person> citizens = new ArrayList<>();
-                List<Object> citizensInfo = (List<Object>) buildingInfo.get("citizens");
-                for (Object citizenId : citizensInfo) {
-                    for (Person person : peopleList) {
-
-                        if (person.getName().equals(citizenId)) {
-                            citizens.add(person);
-                            break;
-                        }
-                    }
-                }
-                Building building = new Building((String) buildingInfo.get("address"), citizens);
-                buildingsList.add(building);
-            }
-
-            // Вывод информации для проверки
-            for (Building building : buildingsList) {
-                System.out.println("Building address: " + building.getAddress());
-                System.out.println("Building citizens:");
-                for (Person person : building.getCitizens()) {
-                    System.out.println("- Name: " + person.getName() + ", Surname: " + person.getSurname());
-                }
-                System.out.println();
+            System.out.println("Buildings:");
+            for (Building building : buildingsMap.values()) {
+                System.out.println(building.toString());
             }
 
         } catch (IOException e) {
             System.err.println("Failed to read file: " + e.getMessage());
+        }
+    }
+
+    private static void personCreate(JSONObject data) {
+        JSONObject peopleObject = data.getJSONArray("Person").getJSONObject(0);
+        for (String personKey : peopleObject.keySet()) {
+            if (peopleMap.containsKey(personKey) || visitedPeople.containsKey(personKey)) {
+                continue;
+            }
+
+            JSONObject personInfo = peopleObject.getJSONObject(personKey);
+            String personName = personInfo.getString("name");
+            String personSurname = personInfo.getString("surname");
+            int personAge = personInfo.getInt("age");
+            String personHome = personInfo.optString("home", null); // Используем optString для получения значения или null
+
+            visitedPeople.put(personKey, true);
+
+            Building homeBuilding = personHome != null ? new Building(personHome, null) : null;
+            Person person = new Person(personName, personSurname, personAge, homeBuilding);
+            peopleMap.put(personKey, person);
+        }
+    }
+
+    private static void buildingCreate(JSONObject data) {
+        JSONObject buildingsObject = data.getJSONArray("Buildings").getJSONObject(0);
+        for (String buildingKey : buildingsObject.keySet()) {
+            if (buildingsMap.containsKey(buildingKey) || visitedBuildings.containsKey(buildingKey)) {
+                continue;
+            }
+
+            JSONObject buildingInfo = buildingsObject.getJSONObject(buildingKey);
+            String buildingAddress = buildingInfo.getString("address");
+            List<Person> buildingResidents = new ArrayList<>();
+            JSONArray citizensIds = buildingInfo.getJSONArray("citizens");
+            for (int i = 0; i < citizensIds.length(); i++) {
+                String citizenId = citizensIds.getString(i);
+                Person resident = peopleMap.get(citizenId);
+                if (resident != null) {
+                    buildingResidents.add(resident);
+                }
+            }
+
+            visitedBuildings.put(buildingKey, true);
+            Building building = buildingResidents.isEmpty() ? new Building(buildingAddress, null) : new Building(buildingAddress, buildingResidents);
+            buildingsMap.put(buildingKey, building);
         }
     }
 }

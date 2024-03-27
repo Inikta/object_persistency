@@ -1,15 +1,17 @@
 package nsu.project.filter_predicates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Or<T> implements FilterPredicate<T> {
 
-    private FilterPredicate<T> filterPredicate1;
-    private FilterPredicate<T> filterPredicate2;
+    private List<FilterPredicate<T>> filterPredicates = new ArrayList<>();
     private FilterOperations operation;
     private FilterPredicate<T> result;
 
     public Or(FilterPredicate<T> filterPredicate1, FilterPredicate<T> filterPredicate2, FilterOperations operation, FilterPredicate<T> result) {
-        this.filterPredicate1 = filterPredicate1;
-        this.filterPredicate2 = filterPredicate2;
+        this.filterPredicates.add(filterPredicate1);
+        this.filterPredicates.add(filterPredicate2);
         this.operation = operation;
         this.result = result;
     }
@@ -18,12 +20,12 @@ public class Or<T> implements FilterPredicate<T> {
     public boolean evaluate() {
         switch (operation) {
             case EQUALS -> {
-                if (filterPredicate1.evaluate() || filterPredicate2.evaluate() == result.evaluate()) {
+                if (filterPredicates.get(0).evaluate() || filterPredicates.get(1).evaluate() == result.evaluate()) {
                     return true;
                 }
             }
             case NOT_EQUAL -> {
-                if (filterPredicate1.evaluate() || filterPredicate2.evaluate() != result.evaluate()) {
+                if (filterPredicates.get(0).evaluate() || filterPredicates.get(1).evaluate() != result.evaluate()) {
                     return true;
                 }
             }
@@ -31,20 +33,12 @@ public class Or<T> implements FilterPredicate<T> {
         return false;
     }
 
-    public FilterPredicate<T> getFilterPredicate1() {
-        return filterPredicate1;
+    public List<FilterPredicate<T>> getFilterPredicates() {
+        return filterPredicates;
     }
 
-    public void setFilterPredicate1(FilterPredicate<T> filterPredicate1) {
-        this.filterPredicate1 = filterPredicate1;
-    }
-
-    public FilterPredicate<T> getFilterPredicate2() {
-        return filterPredicate2;
-    }
-
-    public void setFilterPredicate2(FilterPredicate<T> filterPredicate2) {
-        this.filterPredicate2 = filterPredicate2;
+    public void setFilterPredicates(List<FilterPredicate<T>> filterPredicates) {
+        this.filterPredicates = filterPredicates;
     }
 
     public FilterOperations getOperation() {

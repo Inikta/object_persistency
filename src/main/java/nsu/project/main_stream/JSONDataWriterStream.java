@@ -16,6 +16,7 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     private FilterPredicate<K> filterExpression;
     private final HashMap<Long, Integer> SerIdStatusMap = new HashMap<>();
     private String kClassName = "Person";   //!!!!!!
+    private JSONObject storageObject;
     private JSONObject oldJsonChunk;
     private JSONObject editedJsonChunk;
     private long chunkBeginLine = 0;
@@ -32,17 +33,30 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     private JSONDataWriterStream(String storagePathString,
                                  FilterPredicate<K> filterExpression,
                                  String kClassName,
+                                 JSONObject storageObject,
                                  JSONObject oldJsonChunk,
+                                 JSONObject editedJsonChunk,
                                  long chunkBeginLine,
                                  long chunkEndLine,
+                                 long chunkBeginPosition,
+                                 long chunkEndPosition,
                                  List<K> inputObjects) {
         this.storagePathString = storagePathString;
         this.filterExpression = filterExpression;
         this.kClassName = kClassName;
+        this.storageObject = storageObject;
         this.oldJsonChunk = oldJsonChunk;
+        this.editedJsonChunk = editedJsonChunk;
         this.chunkBeginLine = chunkBeginLine;
         this.chunkEndLine = chunkEndLine;
+        this.chunkBeginPosition = chunkBeginPosition;
+        this.chunkEndPosition = chunkEndPosition;
         this.inputObjects = inputObjects;
+    }
+
+    private JSONObject readStorageToJSONObject() throws IOException {
+        String storageString = new String(Files.readAllBytes(Path.of(storagePathString)));
+        return new JSONObject(storageString);
     }
 
     private void prepareForFilterAndWrite() throws IOException, InvalidNameException {
@@ -55,6 +69,8 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
         if (!storage.exists() || storage.isDirectory()) {
             Files.createFile(storagePath);
         }
+
+        storageObject = readStorageToJSONObject();
 
         String readResult = readJSONChunk();
         try {
@@ -135,9 +151,10 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
 
                 if (kClassFound) {
                     String finalInputLine = inputLine;
-                    if (storageClasses.stream().anyMatch(w -> finalInputLine.contains("\"" + w + "\"" + ": ["))
-                            & prevLine.strip().contains("},")) {
-                        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+                    boolean c1 = storageClasses.stream().anyMatch(w -> finalInputLine.contains(w + ": ["));
+                    boolean c2 = prevLine.strip().contains("{");
+                    if (c1 & c2) {
+                        stringBuilder.deleteCharAt(stringBuilder.length() - 2);
                         break;
                     } else {
                         stringBuilder.append(inputLine.strip());
@@ -167,35 +184,22 @@ public class JSONDataWriterStream<K> implements JSONDataStream<K> {
     public JSONDataWriterStream<K> put(List<K> kObjectList) {
         inputObjects = kObjectList;
         kClassName = kObjectList.getClass().getName();
-        return new JSONDataWriterStream<>(
-                this.storagePathString,
-                this.filterExpression,
-                this.kClassName,
-                this.oldJsonChunk,
-                this.chunkBeginLine,
-                this.chunkEndLine,
-                this.inputObjects);
+        return this;
     }
 
     private List<String> convertInputToJSONString(List<K> inputObjects) {
         return inputObjects.stream().map(Object::toString).toList();
     }
+
     public JSONDataWriterStream<K> filter(FilterPredicate<K> filterPredicate) {
         filterExpression = filterPredicate;
         JSONArray jsonArray = oldJsonChunk.getJSONArray(kClassName);
 
         for (int i = 0; i < jsonArray.length(); i++) {
-            jsonArray.get(i);
+            JSONObject temp = jsonArray.getJSONObject(i);
         }
 
-        return new JSONDataWriterStream<>(
-                this.storagePathString,
-                this.filterExpression,
-                this.kClassName,
-                this.oldJsonChunk,
-                this.chunkBeginLine,
-                this.chunkEndLine,
-                this.inputObjects);
+        return this;
     }
 
     public void write() {

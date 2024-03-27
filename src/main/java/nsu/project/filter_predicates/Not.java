@@ -1,24 +1,27 @@
 package nsu.project.filter_predicates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Not<T> implements FilterPredicate<T> {
 
-    private FilterPredicate<T> filterPredicate;
+    private List<FilterPredicate<T>> filterPredicates = new ArrayList<>();
 
     public Not(FilterPredicate<T> filterPredicate) {
-        this.filterPredicate = filterPredicate;
+        this.filterPredicates.add(filterPredicate);
     }
 
     @Override
     public boolean evaluate() {
-        return !filterPredicate.evaluate();
+        return !filterPredicates.get(0).evaluate();
     }
 
-    public FilterPredicate<T> getFilterPredicate() {
-        return filterPredicate;
+    public List<FilterPredicate<T>> getFilterPredicates() {
+        return filterPredicates;
     }
 
-    public void setFilterPredicate(FilterPredicate<T> filterPredicate) {
-        this.filterPredicate = filterPredicate;
+    public void setFilterPredicates(List<FilterPredicate<T>> filterPredicates) {
+        this.filterPredicates = filterPredicates;
     }
 }
 

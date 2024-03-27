@@ -4,7 +4,7 @@ import com.sun.jdi.InvalidTypeException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ValuePredicate<T, K> implements FilterPredicate<T> {
+public class ValuePredicate<T> implements FilterPredicate<T> {
     private String fieldName;
     private String fieldType;
     private String value;
@@ -14,13 +14,11 @@ public class ValuePredicate<T, K> implements FilterPredicate<T> {
     public ValuePredicate(String fieldName,
                           String fieldType,
                           FilterOperations operation,
-                          String value,
-                          JSONObject object) {
+                          String value) {
         this.fieldName = fieldName;
         this.fieldType = fieldType;
         this.operation = operation;
         this.value = value;
-        this.jsonObject = object;
     }
 
     @Override

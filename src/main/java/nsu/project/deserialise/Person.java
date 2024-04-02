@@ -1,4 +1,4 @@
-package nsu.project;
+package nsu.project.deserialise;
 
 public class Person {
     private String name;

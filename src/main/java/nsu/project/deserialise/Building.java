@@ -1,4 +1,4 @@
-package nsu.project;
+package nsu.project.deserialise;
 
 import java.util.List;
 

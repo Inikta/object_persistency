@@ -92,7 +92,7 @@ public class SerializerPrototype {
         personJSON.put("surname", person.getSurname());
 
         if (person.getHome() != null) {
-            int buildingKey = ObjectIdGenerator.generate(person.getHome());
+            String buildingKey = String.valueOf(ObjectIdGenerator.generate(person.getHome()));
             personJSON.remove("home");
             personJSON.put("home", buildingKey);
         } else {
@@ -135,9 +135,9 @@ public class SerializerPrototype {
 
         if (building.getCitizens() != null) {
             buildingJSON.remove("citizens");
-            List<Integer> personKeys = new ArrayList<>();
+            List<String> personKeys = new ArrayList<>();
             for (Person citizen : building.getCitizens()) {
-                int personKey = ObjectIdGenerator.generate(citizen);
+                String personKey = String.valueOf(ObjectIdGenerator.generate(citizen));
                 personKeys.add(personKey);
             }
             buildingJSON.put("citizens", personKeys);

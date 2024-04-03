@@ -11,25 +11,25 @@
       "1211075539": {
         "address": "Virtual Street #1",
         "citizens": [
-          877320755,
-          411528962,
-          2035485626
+          "877320755",
+          "411528962",
+          "2035485626"
         ]
       },
       "534357531": {
         "address": "Virtual Street #0",
         "citizens": [
-          1360015280,
-          589188943,
-          1074874587
+          "1360015280",
+          "589188943",
+          "1074874587"
         ]
       },
       "1062691199": {
         "address": "Virtual Street #2",
         "citizens": [
-          1280665921,
-          1843870600,
-          576590289
+          "1280665921",
+          "1843870600",
+          "576590289"
         ]
       },
       "10": {
@@ -58,47 +58,47 @@
       "1426010966": {
         "surname": "Chelovekov0",
         "name": "Person0",
-        "home": 1639209601
+        "home": "1639209601"
       },
       "1609843298": {
         "surname": "Chelovekov4",
         "name": "Person4",
-        "home": 925572888
+        "home": "925572888"
       },
       "1020854665": {
         "surname": "Chelovekov6",
         "name": "Person6",
-        "home": 34329983
+        "home": "34329983"
       },
       "771983442": {
         "surname": "Chelovekov5",
         "name": "Person5",
-        "home": 1052992962
+        "home": "1052992962"
       },
       "246319361": {
         "surname": "Chelovekov8",
         "name": "Person8",
-        "home": 252919790
+        "home": "252919790"
       },
       "1918435534": {
         "surname": "Chelovekov3",
         "name": "Person3",
-        "home": 913732808
+        "home": "913732808"
       },
       "981296484": {
         "surname": "Chelovekov1",
         "name": "Person1",
-        "home": 547328345
+        "home": "547328345"
       },
       "1046250225": {
         "surname": "Chelovekov7",
         "name": "Person7",
-        "home": 1027071262
+        "home": "1027071262"
       },
       "838606291": {
         "surname": "Chelovekov2",
         "name": "Person2",
-        "home": 465137555
+        "home": "465137555"
       }
     }
   ]

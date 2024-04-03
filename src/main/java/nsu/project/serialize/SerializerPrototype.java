@@ -99,16 +99,21 @@ public class SerializerPrototype {
             personJSON.remove("home");
         }
 
+        JSONObject editedPeopleObject = new JSONObject();
         for (String key : peopleObject.keySet()) {
             if (key.equals(personKey)) {
                 if (visitedPeople.containsKey(personKey)) {
                     continue;
                 }
             }
-            peopleObject.put(key, personJSON);
+            editedPeopleObject.put(personKey, personJSON);
         }
 
-        peopleObject.put(personKey, personJSON);
+        editedPeopleObject.put(personKey, personJSON);
+        for (String key : editedPeopleObject.keySet()) {
+            peopleObject.put(key, editedPeopleObject.get(key));
+        }
+
         JSONArray personSJONArray = data.getJSONArray("Person");
 
         data.remove("Person");
@@ -128,15 +133,6 @@ public class SerializerPrototype {
         JSONObject buildingJSON = new JSONObject();
         buildingJSON.put("address", building.getAddress());
 
-        for (String key : buildingsObject.keySet()) {
-            if (key.equals(buildingKey)) {
-                if (visitedBuildings.containsKey(buildingKey)) {
-                    continue;
-                }
-            }
-            buildingsObject.put(key, buildingJSON);
-        }
-
         if (building.getCitizens() != null) {
             buildingJSON.remove("citizens");
             List<Integer> personKeys = new ArrayList<>();
@@ -149,7 +145,21 @@ public class SerializerPrototype {
             buildingJSON.remove("home");
         }
 
-        buildingsObject.put(buildingKey, buildingJSON);
+        JSONObject editedBuildingsObject = new JSONObject();
+        for (String key : buildingsObject.keySet()) {
+            if (key.equals(buildingKey)) {
+                if (visitedBuildings.containsKey(buildingKey)) {
+                    continue;
+                }
+            }
+            editedBuildingsObject.put(buildingKey, buildingJSON);
+        }
+
+        editedBuildingsObject.put(buildingKey, buildingJSON);
+        for (String key : editedBuildingsObject.keySet()) {
+            buildingsObject.put(key, editedBuildingsObject.get(key));
+        }
+
         JSONArray buildingJSONArray = data.getJSONArray("Buildings");
 
         data.remove("Buildings");

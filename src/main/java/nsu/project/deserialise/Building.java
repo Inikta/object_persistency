@@ -1,7 +1,10 @@
-package nsu.project;
+package nsu.project.deserialise;
+
+import nsu.project.annotations.ToSerialize;
 
 import java.util.List;
 
+@ToSerialize
 public class Building {
     private String address;
     private List<Person> citizens;
@@ -10,6 +13,7 @@ public class Building {
         this.address = address;
         this.citizens = citizens;
     }
+
 
     public String getAddress() {
         return address;

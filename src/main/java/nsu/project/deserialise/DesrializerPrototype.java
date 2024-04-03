@@ -1,4 +1,5 @@
-package nsu.project;
+package nsu.project.deserialise;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,14 +21,14 @@ public class DesrializerPrototype {
     public static void main(String[] args) {
         try {
             // Чтение содержимого файла JSON
-            String json_data = new String(Files.readAllBytes(Paths.get("data.json")));
+            String json_data = new String(Files.readAllBytes(Paths.get("src/main/java/nsu/project/deserialise/data.json")));
 
             // Парсинг JSON-данных
             JSONObject data = new JSONObject(json_data);
 
             // Создание объектов Person и Building
-            personCreate(data);
-            buildingCreate(data);
+            personDeserialize(data);
+            buildingDeserialize(data);
 
             // Вывод информации о людях и зданиях
             try (FileWriter writer = new FileWriter("output.txt")) {
@@ -47,7 +48,8 @@ public class DesrializerPrototype {
         }
     }
 
-    private static void personCreate(JSONObject data) {
+
+    private static void personDeserialize(JSONObject data) {
         JSONObject peopleObject = data.getJSONArray("Person").getJSONObject(0);
         JSONObject buildingsObject = data.getJSONArray("Buildings").getJSONObject(0);
         for (String personKey : peopleObject.keySet()) {
@@ -78,7 +80,7 @@ public class DesrializerPrototype {
     }
 
 
-    private static void buildingCreate(JSONObject data) {
+    private static void buildingDeserialize(JSONObject data) {
         JSONObject buildingsObject = data.getJSONArray("Buildings").getJSONObject(0);
         for (String buildingKey : buildingsObject.keySet()) {
             if (buildingsMap.containsKey(buildingKey) || visitedBuildings.containsKey(buildingKey)) {

@@ -1,0 +1,107 @@
+{
+  "Building": [
+    {
+      "address": "Virtual Street #0",
+      "citizens": [
+        885284298,
+        1534030866,
+        664223387
+      ]
+    },
+    {
+      "address": "Virtual Street #1",
+      "citizens": [
+        824909230,
+        666641942,
+        960604060
+      ]
+    },
+    {
+      "address": "Virtual Street #2",
+      "citizens": [
+        1349393271,
+        159413332,
+        1028214719
+      ]
+    }
+  ],
+  "Buildings": [
+    {
+      "11": {
+        "address": "Virtual Street #2",
+        "citizens": [
+          1349393271,
+          159413332,
+          1028214719
+        ]
+      },
+      "10": {
+        "address": "Virtual Street #2",
+        "citizens": [
+          1349393271,
+          159413332,
+          1028214719
+        ]
+      }
+    }
+  ],
+  "Person": [
+    {
+      "1": {
+        "surname": "Chelovekov8",
+        "name": "Person8",
+        "home": 1338668845
+      },
+      "2": {
+        "surname": "Chelovekov8",
+        "name": "Person8",
+        "home": 1338668845
+      }
+    },
+    {
+      "surname": "Chelovekov0",
+      "name": "Person0",
+      "home": 1389133897
+    },
+    {
+      "surname": "Chelovekov1",
+      "name": "Person1",
+      "home": 1389133897
+    },
+    {
+      "surname": "Chelovekov2",
+      "name": "Person2",
+      "home": 1389133897
+    },
+    {
+      "surname": "Chelovekov3",
+      "name": "Person3",
+      "home": 122883338
+    },
+    {
+      "surname": "Chelovekov4",
+      "name": "Person4",
+      "home": 122883338
+    },
+    {
+      "surname": "Chelovekov5",
+      "name": "Person5",
+      "home": 122883338
+    },
+    {
+      "surname": "Chelovekov6",
+      "name": "Person6",
+      "home": 1338668845
+    },
+    {
+      "surname": "Chelovekov7",
+      "name": "Person7",
+      "home": 1338668845
+    },
+    {
+      "surname": "Chelovekov8",
+      "name": "Person8",
+      "home": 1338668845
+    }
+  ]
+}

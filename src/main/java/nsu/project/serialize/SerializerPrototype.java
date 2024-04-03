@@ -7,9 +7,7 @@ import nsu.project.generators.ObjectIdGenerator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.swing.*;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +21,9 @@ public class SerializerPrototype {
     private static String FILE_NAME = "src/main/java/nsu/project/deserialise/data1.json";
     private static Map<String, Boolean> visitedPeople = new HashMap<>();
     private static Map<String, Boolean> visitedBuildings = new HashMap<>();
+
+    private static Map<String, String> peopleHome = new HashMap<>();
+    ;
 
     public static void main(String[] args) {
         List<Person> personList = new ArrayList<>();
@@ -85,16 +86,29 @@ public class SerializerPrototype {
         }
         JSONObject peopleObject = data.getJSONArray("Person").getJSONObject(0);
 
-        String personKey = String.valueOf(ObjectIdGenerator.generate(person));
+        String personKey = String.valueOf(ObjectIdGenerator.generatePerson(person));
 
         JSONObject personJSON = new JSONObject();
         personJSON.put("name", person.getName());
         personJSON.put("surname", person.getSurname());
+        personJSON.put("age", person.getAge());
 
         if (person.getHome() != null) {
-            String buildingKey = String.valueOf(ObjectIdGenerator.generate(person.getHome()));
-            personJSON.remove("home");
-            personJSON.put("home", buildingKey);
+            if (peopleHome.containsKey(personKey)) {
+                if (peopleHome.get(personKey).isBlank()) {
+                    String buildingKey = String.valueOf(ObjectIdGenerator.generateBuilding(person.getHome()));
+                    personJSON.remove("home");
+                    personJSON.put("home", buildingKey);
+                    peopleHome.put(personKey, buildingKey);
+                } else {
+                    personJSON.put("home", peopleHome.get(personKey));
+                }
+            } else {
+                String buildingKey = String.valueOf(ObjectIdGenerator.generateBuilding(person.getHome()));
+                personJSON.remove("home");
+                personJSON.put("home", buildingKey);
+                peopleHome.put(personKey, buildingKey);
+            }
         } else {
             personJSON.remove("home");
         }
@@ -129,16 +143,17 @@ public class SerializerPrototype {
         }
         JSONObject buildingsObject = data.getJSONArray("Buildings").getJSONObject(0);
 
-        String buildingKey = String.valueOf(ObjectIdGenerator.generate(building));
+        String buildingKey = String.valueOf(ObjectIdGenerator.generateBuilding(building));
         JSONObject buildingJSON = new JSONObject();
         buildingJSON.put("address", building.getAddress());
 
         if (building.getCitizens() != null) {
             buildingJSON.remove("citizens");
             List<String> personKeys = new ArrayList<>();
-            for (Person citizen : building.getCitizens()) {
-                String personKey = String.valueOf(ObjectIdGenerator.generate(citizen));
-                personKeys.add(personKey);
+            for (String citizenKey : peopleHome.keySet()) {
+                if (peopleHome.get(citizenKey).equals(buildingKey)) {
+                    personKeys.add(citizenKey);
+                }
             }
             buildingJSON.put("citizens", personKeys);
         } else {

@@ -103,7 +103,13 @@ public class SerializerPrototype {
             peopleObject.put(key, personJSON);
         }
 
-        data.accumulate("Person", personJSON);
+        peopleObject.put(personKey, personJSON);
+        JSONArray personSJONArray = data.getJSONArray("Person");
+
+        data.remove("Person");
+        data.put("Person", new ArrayList<Person>());
+        data.accumulate("Person", peopleObject);
+
         visitedPeople.put(personKey, true);
     }
 
@@ -136,8 +142,13 @@ public class SerializerPrototype {
             buildingJSON.remove("home");
         }
 
-        //data.remove("Building");
-        data.accumulate("Building", buildingJSON);
+        buildingsObject.put(buildingKey, buildingJSON);
+        JSONArray buildingJSONArray = data.getJSONArray("Buildings");
+
+        data.remove("Buildings");
+        data.put("Buildings", new ArrayList<Building>());
+        data.accumulate("Buildings", buildingsObject);
+
         visitedBuildings.put(buildingKey, true);
     }
 }

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 public class DeserializerPrototype {
     private static Map<String, Person> peopleMap = new HashMap<>();
@@ -82,7 +81,6 @@ public class DeserializerPrototype {
             peopleMap.put(personKey, person);
         }
     }
-
 
     public static void buildingDeserialize(JSONObject data) {
         JSONObject buildingsObject = data.getJSONArray("Buildings").getJSONObject(0);

@@ -4,7 +4,6 @@ import nsu.project.annotations.ToSerialize;
 import nsu.project.deserialise.Building;
 import nsu.project.deserialise.Person;
 import nsu.project.generators.ObjectIdGenerator;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -21,9 +20,7 @@ public class SerializerPrototype {
     private static String FILE_NAME = "data1.json";
     private static Map<String, Boolean> visitedPeople = new HashMap<>();
     private static Map<String, Boolean> visitedBuildings = new HashMap<>();
-
     private static Map<String, String> peopleHome = new HashMap<>();
-    ;
 
     public static void main(String[] args) {
         List<Person> personList = new ArrayList<>();
@@ -42,21 +39,17 @@ public class SerializerPrototype {
         }
 
         try {
-            // Чтение содержимого файла JSON
             String json_data = new String(Files.readAllBytes(Paths.get(FILE_NAME)));
 
             JSONObject data;
-            // Парсинг JSON-данных
+
             if (json_data.isBlank()) {
                 data = new JSONObject("{\"Person\":[{}],\"Building\":[{}]}");
             } else {
                 data = new JSONObject(json_data);
             }
-            // Создание объектов Person и Building
+
             serialize(personList, buildings, data);
-
-            // Вывод информации о людях и зданиях
-
 
         } catch (IOException e) {
             System.err.println("Failed to read file: " + e.getMessage());
@@ -80,7 +73,7 @@ public class SerializerPrototype {
         fileWriter.close();
     }
 
-    public static void personSerialize(Person person, JSONObject data) throws IOException, ClassNotFoundException {
+    public static void personSerialize(Person person, JSONObject data) throws ClassNotFoundException {
         if (Person.class.getAnnotation(ToSerialize.class) == null) {
             throw new ClassNotFoundException("Class " + Person.class.getName() + " is not annotated for serialization.");
         }
@@ -128,8 +121,6 @@ public class SerializerPrototype {
             peopleObject.put(key, editedPeopleObject.get(key));
         }
 
-        JSONArray personSJONArray = data.getJSONArray("Person");
-
         data.remove("Person");
         data.put("Person", new ArrayList<Person>());
         data.accumulate("Person", peopleObject);
@@ -137,7 +128,7 @@ public class SerializerPrototype {
         visitedPeople.put(personKey, true);
     }
 
-    public static void buildingSerialize(Building building, JSONObject data) throws IOException, ClassNotFoundException {
+    public static void buildingSerialize(Building building, JSONObject data) throws ClassNotFoundException {
         if (Building.class.getAnnotation(ToSerialize.class) == null) {
             throw new ClassNotFoundException("Class " + Person.class.getName() + " is not annotated for serialization.");
         }
@@ -174,8 +165,6 @@ public class SerializerPrototype {
         for (String key : editedBuildingsObject.keySet()) {
             buildingsObject.put(key, editedBuildingsObject.get(key));
         }
-
-        JSONArray buildingJSONArray = data.getJSONArray("Buildings");
 
         data.remove("Buildings");
         data.put("Buildings", new ArrayList<Building>());

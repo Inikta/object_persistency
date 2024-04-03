@@ -1,0 +1,36 @@
+{
+  "Person": [
+    {
+      "1": {
+        "name": "John",
+        "surname": "Doe",
+        "age": 30,
+        "home": "10"
+      },
+      "2": {
+        "name": "Andrew",
+        "surname": "Meow",
+        "age": 30,
+        "home": "10"
+      }
+    }
+  ],
+  "Buildings": [
+    {
+      "10": {
+        "address": "Pirogova st. 5",
+        "citizens": [
+          "1",
+          "2"
+        ]
+      },
+      "11": {
+        "address": "Pirogova st. 15",
+        "citizens": [
+          "3",
+          "4"
+        ]
+      }
+    }
+  ]
+}

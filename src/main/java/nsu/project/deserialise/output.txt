@@ -1,7 +1,0 @@
-People:
-Person{name='John', surname='Doe', age=30, home=Building{address='Pirogova st. 5', citizens=null}}
-Person{name='Andrew', surname='Meow', age=30, home=Building{address='Pirogova st. 5', citizens=null}}
-
-Buildings:
-Building{address='Pirogova st. 15', citizens=null}
-Building{address='Pirogova st. 5', citizens=[Person{name='John', surname='Doe', age=30, home=Building{address='Pirogova st. 5', citizens=null}}, Person{name='Andrew', surname='Meow', age=30, home=Building{address='Pirogova st. 5', citizens=null}}]}

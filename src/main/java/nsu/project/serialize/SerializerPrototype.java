@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SerializerPrototype {
-    private static String FILE_NAME = "src/main/java/nsu/project/deserialise/data1.json";
+    private static String FILE_NAME = "data1.json";
     private static Map<String, Boolean> visitedPeople = new HashMap<>();
     private static Map<String, Boolean> visitedBuildings = new HashMap<>();
 

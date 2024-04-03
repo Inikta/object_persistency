@@ -22,7 +22,7 @@ public class DeserializerPrototype {
     public static void main(String[] args) {
         try {
             // Чтение содержимого файла JSON
-            String json_data = new String(Files.readAllBytes(Paths.get("src/main/java/nsu/project/deserialise/data.json")));
+            String json_data = new String(Files.readAllBytes(Paths.get("data1.json")));
 
             // Парсинг JSON-данных
             JSONObject data = new JSONObject(json_data);
@@ -52,6 +52,7 @@ public class DeserializerPrototype {
         personDeserialize(data);
         buildingDeserialize(data);
     }
+
     public static void personDeserialize(JSONObject data) {
         JSONObject peopleObject = data.getJSONArray("Person").getJSONObject(0);
         JSONObject buildingsObject = data.getJSONArray("Buildings").getJSONObject(0);

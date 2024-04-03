@@ -1,7 +1,19 @@
 People:
+Person{name='Person7', surname='Chelovekov7', age=12, home=Building{address='Virtual Street #2', citizens=null}}
 Person{name='John', surname='Doe', age=30, home=Building{address='Pirogova st. 5', citizens=null}}
+Person{name='Person1', surname='Chelovekov1', age=6, home=Building{address='Virtual Street #0', citizens=null}}
+Person{name='Person4', surname='Chelovekov4', age=9, home=Building{address='Virtual Street #1', citizens=null}}
 Person{name='Andrew', surname='Meow', age=30, home=Building{address='Pirogova st. 5', citizens=null}}
+Person{name='Person6', surname='Chelovekov6', age=11, home=Building{address='Virtual Street #2', citizens=null}}
+Person{name='Person0', surname='Chelovekov0', age=5, home=Building{address='Virtual Street #0', citizens=null}}
+Person{name='Person2', surname='Chelovekov2', age=7, home=Building{address='Virtual Street #0', citizens=null}}
+Person{name='Person3', surname='Chelovekov3', age=8, home=Building{address='Virtual Street #1', citizens=null}}
+Person{name='Person5', surname='Chelovekov5', age=10, home=Building{address='Virtual Street #1', citizens=null}}
+Person{name='Person8', surname='Chelovekov8', age=13, home=Building{address='Virtual Street #2', citizens=null}}
 
 Buildings:
 Building{address='Pirogova st. 15', citizens=null}
+Building{address='Virtual Street #0', citizens=[Person{name='Person1', surname='Chelovekov1', age=6, home=Building{address='Virtual Street #0', citizens=null}}, Person{name='Person0', surname='Chelovekov0', age=5, home=Building{address='Virtual Street #0', citizens=null}}, Person{name='Person2', surname='Chelovekov2', age=7, home=Building{address='Virtual Street #0', citizens=null}}]}
+Building{address='Virtual Street #1', citizens=[Person{name='Person4', surname='Chelovekov4', age=9, home=Building{address='Virtual Street #1', citizens=null}}, Person{name='Person3', surname='Chelovekov3', age=8, home=Building{address='Virtual Street #1', citizens=null}}, Person{name='Person5', surname='Chelovekov5', age=10, home=Building{address='Virtual Street #1', citizens=null}}]}
+Building{address='Virtual Street #2', citizens=[Person{name='Person7', surname='Chelovekov7', age=12, home=Building{address='Virtual Street #2', citizens=null}}, Person{name='Person6', surname='Chelovekov6', age=11, home=Building{address='Virtual Street #2', citizens=null}}, Person{name='Person8', surname='Chelovekov8', age=13, home=Building{address='Virtual Street #2', citizens=null}}]}
 Building{address='Pirogova st. 5', citizens=[Person{name='John', surname='Doe', age=30, home=Building{address='Pirogova st. 5', citizens=null}}, Person{name='Andrew', surname='Meow', age=30, home=Building{address='Pirogova st. 5', citizens=null}}]}

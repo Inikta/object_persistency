@@ -1,11 +1,20 @@
 package nsu.project.generators;
 
+import nsu.project.deserialise.Building;
+import nsu.project.deserialise.Person;
+
+import java.util.Objects;
 import java.util.Random;
 
-//M1mur part
+
 public class ObjectIdGenerator {
     private static Random random = new Random(123456789);
-    public static <T> int generate(T object) {
-        return random.nextInt(1, Integer.MAX_VALUE);
+
+    public static int generatePerson(Person person) {
+        return Objects.hash(person.getName(), person.getSurname(), person.getAge(), person.getHome());
+    }
+
+    public static int generateBuilding(Building building) {
+        return Objects.hash(building.getAddress());
     }
 }

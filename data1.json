@@ -1,0 +1,114 @@
+{
+  "Buildings": [
+    {
+      "11": {
+        "address": "Pirogova st. 15",
+        "citizens": [
+          "3",
+          "4"
+        ]
+      },
+      "-1529800012": {
+        "address": "Virtual Street #0",
+        "citizens": [
+          "-283807254",
+          "-283838037",
+          "-283776471"
+        ]
+      },
+      "-1529800011": {
+        "address": "Virtual Street #1",
+        "citizens": [
+          "-259053964",
+          "-259084747",
+          "-259023181"
+        ]
+      },
+      "-1529800010": {
+        "address": "Virtual Street #2",
+        "citizens": [
+          "-878162926",
+          "-878193709",
+          "-878132143"
+        ]
+      },
+      "10": {
+        "address": "Pirogova st. 5",
+        "citizens": [
+          "1",
+          "2"
+        ]
+      }
+    }
+  ],
+  "Person": [
+    {
+      "-878162926": {
+        "surname": "Chelovekov7",
+        "name": "Person7",
+        "age": 12,
+        "home": "-1529800010"
+      },
+      "1": {
+        "surname": "Doe",
+        "name": "John",
+        "age": 30,
+        "home": "10"
+      },
+      "-283807254": {
+        "surname": "Chelovekov1",
+        "name": "Person1",
+        "age": 6,
+        "home": "-1529800012"
+      },
+      "-259053964": {
+        "surname": "Chelovekov4",
+        "name": "Person4",
+        "age": 9,
+        "home": "-1529800011"
+      },
+      "2": {
+        "surname": "Meow",
+        "name": "Andrew",
+        "age": 30,
+        "home": "10"
+      },
+      "-878193709": {
+        "surname": "Chelovekov6",
+        "name": "Person6",
+        "age": 11,
+        "home": "-1529800010"
+      },
+      "-283838037": {
+        "surname": "Chelovekov0",
+        "name": "Person0",
+        "age": 5,
+        "home": "-1529800012"
+      },
+      "-283776471": {
+        "surname": "Chelovekov2",
+        "name": "Person2",
+        "age": 7,
+        "home": "-1529800012"
+      },
+      "-259084747": {
+        "surname": "Chelovekov3",
+        "name": "Person3",
+        "age": 8,
+        "home": "-1529800011"
+      },
+      "-259023181": {
+        "surname": "Chelovekov5",
+        "name": "Person5",
+        "age": 10,
+        "home": "-1529800011"
+      },
+      "-878132143": {
+        "surname": "Chelovekov8",
+        "name": "Person8",
+        "age": 13,
+        "home": "-1529800010"
+      }
+    }
+  ]
+}

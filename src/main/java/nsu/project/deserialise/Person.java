@@ -1,5 +1,9 @@
 package nsu.project.deserialise;
 
+import nsu.project.annotations.ToSerialize;
+import org.json.JSONPropertyIgnore;
+
+@ToSerialize
 public class Person {
     private String name;
     private String surname;
@@ -11,6 +15,12 @@ public class Person {
         this.surname = surname;
         this.age = age;
         this.home = home;
+    }
+
+    public Person(String name, String surname, Integer age) {
+        this.name = name;
+        this.surname = surname;
+        this.age = age;
     }
 
     // Геттеры и сеттеры для полей
@@ -38,11 +48,12 @@ public class Person {
         this.age = age;
     }
 
+    //@JSONPropertyIgnore
     public Building getHome() {
         return home;
     }
 
-    public void setHome(Person spouse) {
+    public void setHome(Building home) {
         this.home = home;
     }
 
